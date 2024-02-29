@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { signUpValidationSchema } from "@/lib/validations"
 import Loader from "@/components/ui/shared/Loader"
 import { useToast } from "@/components/ui/use-toast"
+import { useCreateUserAcoountMutation, useSignInAccount } from "@/lib/react-query/queriesAndMutatons"
 
 import {
   Form,
@@ -15,8 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Link } from "react-router-dom"
-import { createUserAccount } from "@/lib/appwrite/api"
+import { Link,useNavigate } from "react-router-dom"
+import { useUserContext } from "@/context/AuthContext"
 
 
 
@@ -27,7 +28,12 @@ const SignUpForm = () => {
 
   const {toast}=useToast()
 
-  const isLoading=false
+  const {checkAuthUser,isLoading:isUserLoading}=useUserContext()
+
+  const navigate=useNavigate()
+
+  const {mutateAsync:createUserAcoount,isPending:isCreatingUser}=useCreateUserAcoountMutation()
+  const {mutateAsync:createSession,isPending:isCreatingSession}=useSignInAccount()
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof signUpValidationSchema>>({
@@ -42,13 +48,34 @@ const SignUpForm = () => {
  
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signUpValidationSchema>) {
-     const newUser=await createUserAccount(values)
+     const newUser=await createUserAcoount(values)
      
      if(!newUser){
         return toast({
           title:"Sign up failed. Please try again"
         })
      }
+
+     const session=await createSession({
+         email:values.email,
+         password:values.password
+     })
+
+     if(!session){
+      return toast({title:"Sign in failed. Please try Again"})
+     }
+
+
+     const isLoggedIn=await checkAuthUser()
+
+     if(isLoggedIn){
+        form.reset();
+        navigate("/")
+
+     }else{
+         toast({title:"Sign up failed. Please try again"})
+     }
+
 
     //  session
   }
@@ -61,7 +88,7 @@ const SignUpForm = () => {
 
       <div className="sm:w-420 flex flex-center flex-col">
         <img src="/assets/images/logo.svg" alt="logo"/>
-        <h2 className="h-3-bold md:h2-bold pt-5 sm:pt-12"></h2>
+        <h2 className="h-3-bold md:h2-bold pt-5 sm:pt-12">Create a Acoount</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2 ">To use Snapgram, please enter your account details </p>
       
 
@@ -120,7 +147,7 @@ const SignUpForm = () => {
           )}
         />
         <Button type="submit" className="shad-button_primary">
-          {isLoading ? <div className="flex-center gap-2"><Loader/>Loading...</div>:"Sign Up"}
+          {isCreatingUser ? <div className="flex-center gap-2"><Loader/>Loading...</div>:"Sign Up"}
         </Button>
 
         <p className="text-small-regular text-light-2 text-center mt-2">
