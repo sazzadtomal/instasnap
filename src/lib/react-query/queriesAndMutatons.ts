@@ -2,7 +2,7 @@ import {useQuery,useMutation,useQueryClient,useInfiniteQuery} from "@tanstack/re
 import { createPost, createUserAccount,signInAccount,signOutAccount } from "../appwrite/api"
 import { INewPost, INewUser } from "@/types"
 import { QUERY_KEYS} from "@/lib/react-query/queryKeys"
-
+import { getRecentPosts } from "../appwrite/api"
 
 export const useCreateUserAcoountMutation=()=>{
 
@@ -37,4 +37,11 @@ export const useCreatePost = () => {
         });
       }
     })
+  };
+
+  export const useGetRecentPosts = () => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      queryFn: getRecentPosts,
+    });
   };
