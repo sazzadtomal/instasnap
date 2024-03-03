@@ -3,7 +3,7 @@ import {z} from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Input } from "@/components/ui/input"
-import { signUpValidationSchema } from "@/lib/validations"
+import { SignupValidation} from "@/lib/validations"
 import Loader from "@/components/ui/shared/Loader"
 import { useToast } from "@/components/ui/use-toast"
 import { useCreateUserAcoountMutation, useSignInAccount } from "@/lib/react-query/queriesAndMutatons"
@@ -28,16 +28,16 @@ const SignUpForm = () => {
 
   const {toast}=useToast()
 
-  const {checkAuthUser,isLoading:isUserLoading}=useUserContext()
+  const {checkAuthUser}=useUserContext()
 
   const navigate=useNavigate()
 
   const {mutateAsync:createUserAcoount,isPending:isCreatingUser}=useCreateUserAcoountMutation()
-  const {mutateAsync:createSession,isPending:isCreatingSession}=useSignInAccount()
+  const {mutateAsync:createSession}=useSignInAccount()
 
   // 1. Define your form.
-  const form = useForm<z.infer<typeof signUpValidationSchema>>({
-    resolver: zodResolver(signUpValidationSchema),
+  const form = useForm<z.infer<typeof SignupValidation>>({
+    resolver: zodResolver(SignupValidation),
     defaultValues: {
       name:'',
       username: '',
@@ -47,7 +47,7 @@ const SignUpForm = () => {
   })
  
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof signUpValidationSchema>) {
+  async function onSubmit(values: z.infer<typeof SignupValidation>) {
      const newUser=await createUserAcoount(values)
      
      if(!newUser){

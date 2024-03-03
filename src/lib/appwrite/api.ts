@@ -1,13 +1,10 @@
 import { ID, Query } from "appwrite";
 
 import { appwriteConfig, account, databases, avatars,storage } from "./config";
-import {  INewPost, INewUser,  } from "@/types";
+import {  INewPost, INewUser, IUpdatePost  } from "@/types";
 
-// ============================================================
-// AUTH
-// ============================================================
 
-// ============================== SIGN UP
+
 export async function createUserAccount(user: INewUser) {
   try {
     const newAccount = await account.create(
@@ -36,7 +33,8 @@ export async function createUserAccount(user: INewUser) {
   }
 }
 
-// ============================== SAVE USER TO DB
+
+
 export async function saveUserToDB(user: {
   accountId: string;
   email: string;
@@ -58,7 +56,7 @@ export async function saveUserToDB(user: {
   }
 }
 
-// ============================== SIGN IN
+
 export async function signInAccount(user: { email: string; password: string }) {
   try {
     const session = await account.createEmailSession(user.email, user.password);
@@ -69,7 +67,7 @@ export async function signInAccount(user: { email: string; password: string }) {
   }
 }
 
-// ============================== GET ACCOUNT
+
 export async function getAccount() {
   try {
     const currentAccount = await account.get();
@@ -80,7 +78,7 @@ export async function getAccount() {
   }
 }
 
-// ============================== GET USER
+
 export async function getCurrentUser() {
   try {
     const currentAccount = await getAccount();
@@ -263,6 +261,7 @@ export async function savePost(userId: string, postId: string) {
 }
 
 
+
 export async function deleteSavedPost(savedRecordId: string) {
   try {
     const statusCode = await databases.deleteDocument(
@@ -272,6 +271,112 @@ export async function deleteSavedPost(savedRecordId: string) {
     );
 
     if (!statusCode) throw Error;
+
+    return { status: "Ok" };
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+export async function getPostById(postId?: string) {
+  if (!postId) throw Error;
+
+  try {
+    const post = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    );
+
+    if (!post) throw Error;
+
+    return post;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
+
+
+
+
+export async function updatePost(post: IUpdatePost) {
+  const hasFileToUpdate = post.file.length > 0;
+
+  try {
+    let image = {
+      imageUrl: post.imageUrl,
+      imageId: post.imageId,
+    };
+
+    if (hasFileToUpdate) {
+     
+      const uploadedFile = await uploadFile(post.file[0]);
+      if (!uploadedFile) throw Error;
+
+     
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+    }
+
+    const tags = post.tags?.replace(/ /g, "").split(",") || [];
+
+
+    const updatedPost = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      post.postId,
+      {
+        caption: post.caption,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+        location: post.location,
+        tags: tags,
+      }
+    );
+
+
+    if (!updatedPost) {
+      if (hasFileToUpdate) {
+        await deleteFile(image.imageId);
+      }
+
+      throw Error;
+    }
+
+    if (hasFileToUpdate) {
+      await deleteFile(post.imageId);
+    }
+
+    return updatedPost;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+
+export async function deletePost(postId?: string, imageId?: string) {
+  if (!postId || !imageId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      postId
+    );
+
+    if (!statusCode) throw Error;
+
+    await deleteFile(imageId);
 
     return { status: "Ok" };
   } catch (error) {
