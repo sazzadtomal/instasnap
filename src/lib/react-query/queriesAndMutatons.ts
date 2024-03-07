@@ -1,5 +1,5 @@
 import {useQuery,useMutation,useQueryClient, useInfiniteQuery} from "@tanstack/react-query"
-import { createPost, createUserAccount,deletePost,deleteSavedPost,getCurrentUser,getInfinitePosts,getPostById,likePost,savePost,searchPosts,signInAccount,signOutAccount, updatePost } from "../appwrite/api"
+import { createPost, createUserAccount,deletePost,deleteSavedPost,getCurrentUser,getInfinitePosts,getPostById,getUserPosts,likePost,savePost,searchPosts,signInAccount,signOutAccount, updatePost } from "../appwrite/api"
 import { INewPost, INewUser, IUpdatePost } from "@/types"
 import { QUERY_KEYS} from "@/lib/react-query/queryKeys"
 import { getRecentPosts } from "../appwrite/api"
@@ -148,8 +148,8 @@ export const useCreatePost = () => {
   export const useDeletePost = () => {
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn: ({ postId, imageId }: { postId?: string; imageId: string }) =>
-        deletePost(postId, imageId),
+      mutationFn: ({ postId, imageId }: { postId?: string; imageId: string }) =>{
+        return deletePost(postId, imageId)},
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
@@ -163,11 +163,12 @@ export const useCreatePost = () => {
     return useInfiniteQuery({
       queryKey: [QUERY_KEYS.GET_INFINITE_POSTS],
       queryFn: getInfinitePosts as any,
-      initialPageParam: 0,
+      initialPageParam: undefined,
       getNextPageParam: (lastPage: any) => {
         // If there's no data, there are no more pages.
+
         if (lastPage && lastPage.documents.length === 0) {
-          return null;
+          return undefined;
         }
   
         // Use the $id of the last document as the cursor.
@@ -184,5 +185,13 @@ export const useCreatePost = () => {
       queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
       queryFn: () => searchPosts(searchTerm),
       enabled: !!searchTerm,
+    });
+  };
+
+  export const useGetUserPosts = (userId?: string) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
+      queryFn: () => getUserPosts(userId),
+      enabled: !!userId,
     });
   };

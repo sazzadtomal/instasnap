@@ -1,10 +1,14 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/shared/Loader";
-import  PostStats from "@/components/ui/shared/PostStats";
+import GridPostList from "@/components/ui/shared/GridPostList";
+import PostStats from "@/components/ui/shared/PostStats";
+
 import {
   useGetPostById,
+  useGetUserPosts,
+  useDeletePost,
 } from "@/lib/react-query/queriesAndMutatons";
 
 import { multiFormatDateString } from "@/lib/utils";
@@ -16,7 +20,19 @@ const PostDetails = () => {
   const { user } = useUserContext();
 
   const { data: post, isLoading } = useGetPostById(id);
+  const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
+    post?.creator.$id
+  );
+  const { mutateAsync: deletePost } = useDeletePost();
 
+  const relatedPosts = userPosts?.documents.filter(
+    (userPost) => userPost.$id !== id
+  );
+
+  const  handleDeletePost =  async () => {
+    await deletePost({ postId: id, imageId: post?.imageId });
+    navigate(-1);
+  };
 
   return (
     <div className="post_details-container">
@@ -87,7 +103,7 @@ const PostDetails = () => {
                 </Link>
 
                 <Button
-                  onClick={()=>{}}
+                  onClick={handleDeletePost}
                   variant="ghost"
                   className={`ost_details-delete_btn ${
                     user.id !== post?.creator.$id && "hidden"
@@ -123,6 +139,19 @@ const PostDetails = () => {
           </div>
         </div>
       )}
+
+      <div className="w-full max-w-5xl">
+        <hr className="border w-full border-dark-4/80" />
+
+        <h3 className="body-bold md:h3-bold w-full my-10">
+          More Related Posts
+        </h3>
+        {isUserPostLoading || !relatedPosts ? (
+          <Loader />
+        ) : (
+          <GridPostList posts={relatedPosts} />
+        )}
+      </div>
     </div>
   );
 };

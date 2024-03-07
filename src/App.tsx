@@ -6,6 +6,7 @@ import AuthLayout from "./_auth/AuthLayout"
 import RootLayout from "./_root/RootLayout"
 import "./globals.css"
 import { Toaster } from "./components/ui/toaster"
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
       </Routes>
 
       <Toaster/>
+      <ReactQueryDevtools initialIsOpen={false} />
     </main>
   )
 }
