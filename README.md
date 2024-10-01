@@ -9,13 +9,14 @@
 
 Instasnap is a modern web application designed for seamless social interaction, built using TypeScript, React, and Vite.js. The platform offers robust authentication, enabling users to create and manage their accounts securely. Once authenticated, users can share posts, engage with others through likes, and send friend requests to connect with new people. With a user-friendly interface powered by TailwindCSS and a responsive design, Instasnap enhances user experience and encourages community engagement.
 
-
+</br>
 <div align="center">
 <div style="display:flex; flex-direction:column; justify-content: center"><a style="font-size:16px; text-align:center; display:block; color:dodgerblue" href="Live Link: https://instasnap-alpha.netlify.app"><b>Live Link</b></a></div>
 
 <center> <a href="https://instasnap-alpha.netlify.app"> https://instasnap-alpha.netlify.app </a> </center>
 
 <p style="margin-top:5px; text-align:center; font-size:12px">Hosted at Netlify...</p></div>
+</br>
 
 
 ## Features
