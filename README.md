@@ -15,8 +15,8 @@ Instasnap is a modern web application designed for seamless social interaction, 
 
 <center> <a href="https://instasnap-alpha.netlify.app"> https://instasnap-alpha.netlify.app </a> </center>
 
-<p style="margin-top:5px; text-align:center; font-size:12px">Hosted at Netlify...</p></div>
-</br>
+<p style="margin-top:'5px' ; text-align:center; font-size:'12px' ">Hosted at Netlify...</p></div>
+
 
 
 ## Features
