@@ -87,7 +87,7 @@ const SignUpForm = () => {
     <Form {...form}>
 
       <div className="sm:w-420 flex flex-center flex-col">
-        <img src="/assets/images/logo.svg" alt="logo"/>
+      <h1 className="text-3xl font-bold">InstaSnap</h1>
         <h2 className="h-3-bold md:h2-bold pt-5 sm:pt-12">Create a Acoount</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2 ">To use Snapgram, please enter your account details </p>
       
