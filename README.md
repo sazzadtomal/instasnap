@@ -54,4 +54,10 @@ Instasnap is a modern web application designed for seamless social interaction, 
 Open your browser and visit `http://localhost:5173` to see the app in action.
 
    
-   
+## Screenshots
+
+![instasnapSignIn](https://img001.prntscr.com/file/img001/DkvrgTNdQlGc-rkIXvqVPg.png)
+
+![instasnapSignUP](https://img001.prntscr.com/file/img001/7rEg4mI2RIKynwrWPF1Jkw.png)
+
+![instasnapDashboard](https://img001.prntscr.com/file/img001/46rXtLFWQ-eoUVH9wguVTQ.png)
